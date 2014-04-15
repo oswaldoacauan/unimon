@@ -3,38 +3,10 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>unimon</title>
+        <title>Unimon</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <link rel="stylesheet" href="css/core.css">
-
-        <style>
-
-        	input:focus,
-			select:focus,
-			textarea:focus,
-			button:focus {
-			    outline: none !important;
-			}
-
-        	#allPosts {
-			    resize: none;
-			    font-size: 12px;
-			    border-radius: 5px;
-			    border: #ccc solid 1px;
-			    line-height: 14px;
-			    height:100px;
-			    overflow: scroll;
-			}
-
-			p{
-		    	margin:0;
-		    	padding:0;
-		    }
-
-		</style>
-    </head>
+        <link rel="stylesheet" href="css/core.css">    </head>
     <body>
 
 	<!--[if lt IE 8]>
@@ -43,24 +15,66 @@
 
     <div class="container">
     	<div class="jumbotron">
-        	<h1>unimon</h1>
-       		<p></p>
-       		<div class="row">
-       			<div class="col-md-4 col-sm-6 col-xs-6">
-       				<h3>All Chatter<button id="clearAllPosts" type="button" class="btn btn-danger btn-xs pull-right">clear</button></h3>
-       				<div id="allPosts" class="form-control"></div>
-				    <div class="input-group">
-						<input id="blast" type="text" class="form-control" placeholder="send something to everyone">
-						<span class="input-group-btn">
-							<button id="send" class="btn btn-success" type="button">Send</button>
-						</span>
-				    </div><!-- /input-group -->
-       			</div>
-       		</div>
+        	<h1>Unimon</h1>
+       		<p>Projeto GA de Redes de Computadores I - Unisinos 2014/1</p>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Player 01</h4>
+                            <b>HP:</b> <span>100</span>
+                            <p>
+                              <button data-action="attack" type="button" class="btn btn-primary">Attack 01</button>
+                              <button data-action="attack" type="button" class="btn btn-primary">Attack 02</button>
+                              <button data-action="attack" type="button" class="btn btn-primary">Attack 03</button>
+                              <button data-action="attack" type="button" class="btn btn-primary">Attack 04</button>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Player 03</h4>
+                            <b>HP:</b> <span>100</span>
+                            <p>
+                              <button data-action="attack" type="button" class="btn btn-danger">Attack 01</button>
+                              <button data-action="attack" type="button" class="btn btn-danger">Attack 02</button>
+                              <button data-action="attack" type="button" class="btn btn-danger">Attack 03</button>
+                              <button data-action="attack" type="button" class="btn btn-danger">Attack 04</button>
+                            </p>
+                        </div>
+                    </div>
+                    <h4>Combat Log</h4>
+                    <div class="well" id="log"></div>
+                </div>
+                <div class="col-md-6">
+                    <h3>Campos de Batalha disponíveis</h3>
+                    <p>
+                        <form class="form-inline" action="/rooms">
+                            <input type="text" placeholder="Digite o nome do novo campo de batalha" name="room-name">
+                            <button data-action="new-room" type="button" class="btn btn-default">Criar</button>
+                        </form>
+                    </p>
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Nome</th>
+                                <th>Jogadores</th>
+                                <th width="1">
+                                    <button data-action="refresh-rooms" type="button" class="btn btn-default btn-xs">Atualizar</button>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="roomList">
+                            <tr>
+                                <td colspan="3">Nenhum campo disponível</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 		</div>
 	</div>
-    
-    <!-- jQuery --> 
+
+    <!-- jQuery -->
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 	<script>window.jQuery || document.write('<script src="public/bower_components/jQuery/jquery.min.js"><\/script>')</script>
 
@@ -69,15 +83,5 @@
 
 	<!-- APP CODE -->
 	<script src="js/app.min.js"></script>
-
-	<!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-    <script>
-        (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
-        function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
-        e=o.createElement(i);r=o.getElementsByTagName(i)[0];
-        e.src='//www.google-analytics.com/analytics.js';
-        r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
-        ga('create','UA-XXXXX-X');ga('send','pageview');
-    </script>
     </body>
 </html>

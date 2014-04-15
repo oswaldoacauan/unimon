@@ -1,54 +1,39 @@
-/*************************************
-//
-// unimon app
-//
-**************************************/
+var socket = io.connect('http://127.0.0.1:1337/'),
+    Game = new Game(socket);
 
-// connect to our socket server
-var socket = io.connect('http://127.0.0.1:1337/');
-
-var app = app || {};
+$(function() {
+    Game.listRooms();
 
 
-// shortcut for document.ready
-$(function(){
-	//setup some common vars
-	var $blastField = $('#blast'),
-		$allPostsTextArea = $('#allPosts'),
-		$clearAllPosts = $('#clearAllPosts'),
-		$sendBlastButton = $('#send');
+    // Data-Api Bindings
+    // =============
+    $(document).on('click', '[data-action]', function(e) {
+        e.preventDefault();
 
+        var _self   = $(this),
+            _action = _self.data('action'),
+            _param  = _self.data('param') || null;
 
-	//SOCKET STUFF
-	socket.on("blast", function(data){
-		var copy = $allPostsTextArea.html();
-		$allPostsTextArea.html('<p>' + copy + data.msg + "</p>");
-		$allPostsTextArea.scrollTop($allPostsTextArea[0].scrollHeight - $allPostsTextArea.height());
-		//.css('scrollTop', $allPostsTextArea.css('scrollHeight'));
+        switch(_action) {
+            case 'new-room':
+                var inpt = _self.siblings('input[name=room-name]');
+                Game.newRoom(inpt.val());
+                inpt.val(null);
+                break;
+            case 'join-room':
+                Game.joinRoom(_param);
+                break;
+            case 'refresh-rooms':
+                Game.listRooms();
+                break;
+            default:
+                break;
+        }
+    });
 
-	});
-	
-	$clearAllPosts.click(function(e){
-		$allPostsTextArea.text('');
-	});
-
-	$sendBlastButton.click(function(e){
-
-		var blast = $blastField.val();
-		if(blast.length){
-			socket.emit("blast", {msg:blast}, 
-				function(data){
-					$blastField.val('');
-				});
-		}
-
-
-	});
-
-	$blastField.keydown(function (e){
-	    if(e.keyCode == 13){
-	        $sendBlastButton.trigger('click');//lazy, but works
-	    }
-	})
-	
+    // Socket Events
+    // =============
+	socket.on("message", function(data) {
+        $('#log').append(data.message + '<br/>');
+    });
 });
