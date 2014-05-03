@@ -10,8 +10,9 @@ var express = require('express'),
     server  = require('http').createServer(app),
     io      = require('socket.io').listen(server),
     rooms   = require('./routes/room.js'),
-    game    = require('./routes/game.js');
-
+    game    = require('./routes/game.js'),
+    Player  = require('./routes/player.js').Player;
+        
 var runningPortNumber = process.env.PORT;
 
 app.configure(function(){
@@ -67,7 +68,12 @@ function leave(socket, room) {
 io.sockets.on('connection', function (socket) {
     // Globals
 	var _room, _id, _player;
-
+    
+    var player = new Player(socket);
+    game.addPlayer(player);
+    
+    io.sockets.emit('message', {message:"Jogador " + player.getName() + " entrou no jogo"});
+    
     //leave
     /*socket.on('disconnect', function(data) {
         leave(socket, room);
@@ -77,9 +83,15 @@ io.sockets.on('connection', function (socket) {
         console.log(leave);
         leave(socket, room);
     });*/
+    
+    socket.on('inputPlayerName', function(data) {        
+        io.sockets.emit('message', {message:"Jogador " + player.getName() + " alterou seu nome para " + data.playerName});
+        
+        player.setName(data.playerName);
+    });
 
     // When someone try to join a room
-    socket.on('join', function(data) {
+    socket.on('join', function(data) {              
         if(rooms.join(socket, data.roomId)){
             //set "global variable" for closures
             _room = rooms.reference(data.roomId);
@@ -89,7 +101,12 @@ io.sockets.on('connection', function (socket) {
             socket.emit('message', {message:'Erro ao entrar no campo de batalha'});
         }
     });
-
+    
+    socket.on('disconnect', function () {
+        io.sockets.emit('message', {message:"Jogador " + player.getName() + " saiu do jogo"});
+        game.removePlayer(player);
+    });
+    
 });
 
 

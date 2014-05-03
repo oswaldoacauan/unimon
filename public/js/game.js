@@ -1,6 +1,8 @@
+
 function Game(socket) {
     var _io     = socket,
-        _room   = null;
+        _room   = null,
+        _stage  = this.STAGE_INPUTNAME;
 
     var $roomList = $('#roomList');
 
@@ -32,5 +34,24 @@ function Game(socket) {
     this.joinRoom = function(id) {
         _io.emit('join', {roomId: id});
         this.listRooms();
+        Game.goToStage(this.STAGE_ROOM);
     }
+    
+    this.inputPlayerName = function(name) {
+        _io.emit('inputPlayerName', {playerName: name});
+        Game.listRooms();
+        Game.goToStage(this.STAGE_LISTROOMS);
+    }
+    
+    this.goToStage = function(stageName) {
+        $('.game-stage').hide();
+        $('#' + stageName).show();
+    }
+    
+    this.goToStage(_stage);
 }
+
+Game.prototype.STAGE_INPUTNAME = 'stage-inputname';
+Game.prototype.STAGE_LISTROOMS = 'stage-listrooms';
+Game.prototype.STAGE_ROOM = 'stage-room';
+
