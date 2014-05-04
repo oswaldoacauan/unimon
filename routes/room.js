@@ -1,8 +1,10 @@
+var Players = require('./player.js').Players;
+
 function Room(name, id) {
     var _ref = id,
-        _players = [],
+        _players = new Players(),
         _name = name,
-        onPlay = null;
+        onPlay = false;
 
     this.id = function() {
         return _ref;
@@ -14,16 +16,6 @@ function Room(name, id) {
 
     this.getName = function() {
         return _name;
-    };
-
-    this.current = function() {
-        if(this.onPlay === null) {
-            if(players.length > 0) {
-                this.onPlay = players[0];
-            }
-        }
-
-        return this.onPlay;
     };
 };
 
@@ -41,15 +33,9 @@ Room.prototype.all=function(){
     return this.getPlayers();
 };
 
-//return a given socket
-Room.prototype.get = function(socket) {
-    var players = this.getPlayers();
-    for(var i = 0; i < players.length; i++) {
-        if(players[i].socket == socket) {
-            return players[i];
-        }
-    }
-    return null;
+//return true whether this payer is in the room
+Room.prototype.hasPlayer = function(player) {
+    return (this.getPlayers().get(player) === null) ? false : true;
 };
 
 Room.prototype.other = function(socket) {
@@ -62,13 +48,13 @@ Room.prototype.other = function(socket) {
     return null;
 };
 
-Room.prototype.add = function(socket) {
-    var players=this.getPlayers();
+Room.prototype.add = function(player) {
+    var players = this.getPlayers();
     //maximum two players
-    if(players.length < 2) {
+    if(players.length() < 2) {
         //we are not in yet
-        if(this.get(socket) === null) {
-            players.push({socket:socket});
+        if(this.hasPlayer(player) === false) {
+            players.add(player);
             return true;
         }
     }
@@ -76,7 +62,7 @@ Room.prototype.add = function(socket) {
 };
 
 Room.prototype.count = function() {
-    return this.getPlayers().length;
+    return this.getPlayers().length();
 };
 
 Room.prototype.check = function (socket, row, column) {
@@ -98,18 +84,13 @@ Room.prototype.check = function (socket, row, column) {
 Room.prototype.update = function() {
     var players = this.getPlayers();
 
-    if(players.length == 2) {
+    if(players.length() == 2) {
         this.onPlay=this.other(this.onPlay.socket);
     }
 }
 
-Room.prototype.leave = function(socket) {
-    var players = this.getPlayers(),
-        player  = this.get(socket),
-        index   = players.indexOf(player);
-    if(index >= 0) {
-        players.splice(index, 1);
-    }
+Room.prototype.leave = function(player) {
+    this.getPlayers().removePlayer(player);
 };
 
 function dbSession() {
@@ -151,7 +132,7 @@ function dbSession() {
         return rooms;
     };
 
-    //return a given room (serialized fo network :not a reference)
+    //return a given room (serialized for network :not a reference)
     this.room = function(ref){
         var room = getRoom(ref);
         if(room) {
@@ -177,14 +158,33 @@ function dbSession() {
     };
 
     //join
-    this.join = function(socket, roomid){
+    this.join = function(player, roomid){
+        var room = getRoom(roomid);
+        if(room && (this.getPlayerRoom(player) === null)) {
+            return room.add(player);
+        }
+        return false;
+    };
+    
+    //join
+    this.leave = function(player, roomid){
         var room = getRoom(roomid);
         if(room) {
-            return room.add(socket);
+            return room.leave(player);
         } else {
             return false;
         }
     };
+    
+    this.getPlayerRoom = function(player) {
+        for(var i = 0; i < data.length; i++) {
+            if (data[i].hasPlayer(player)) {
+                return data[i];
+            }
+        }
+        
+        return null;
+    }
 
 };
 

@@ -33,8 +33,6 @@ function Game(socket) {
 
     this.joinRoom = function(id) {
         _io.emit('join', {roomId: id});
-        this.listRooms();
-        Game.goToStage(this.STAGE_ROOM);
     }
     
     this.inputPlayerName = function(name) {

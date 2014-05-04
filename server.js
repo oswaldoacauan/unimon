@@ -15,6 +15,14 @@ var express = require('express'),
         
 var runningPortNumber = process.env.PORT;
 
+var stages = {
+    STAGE_INPUTNAME: 'stage-inputname',
+    STAGE_LISTROOMS: 'stage-listrooms',
+    STAGE_ROOM: 'stage-room'
+};
+
+game.setRooms(rooms);
+
 app.configure(function(){
 	// I need to access everything in '/public' directly
 	app.use(express.static(__dirname + '/public'));
@@ -92,10 +100,10 @@ io.sockets.on('connection', function (socket) {
 
     // When someone try to join a room
     socket.on('join', function(data) {              
-        if(rooms.join(socket, data.roomId)){
+        if(rooms.join(player, data.roomId)){
             //set "global variable" for closures
             _room = rooms.reference(data.roomId);
-            _player = _room.get(socket);
+            socket.emit('stage', {stage: stages.STAGE_ROOM});
             socket.emit('message', {message:'Você entrou no campo de batalha (' + _room.getName() + ')'});
         } else {
             socket.emit('message', {message:'Erro ao entrar no campo de batalha'});

@@ -23,6 +23,14 @@ function Players() {
         data.push(player);
     };
     
+    this.get = function(player) {
+        var index = data.indexOf(player);
+        if (index >= 0) {
+            return data[index];
+        }
+        return null;
+    };
+    
     this.getBySocket = function(socket) {
         for(var i = 0; i < data.length; i++) {
             if(data[i].getSocket() == socket) {
@@ -46,6 +54,10 @@ function Players() {
     
     this.getData = function() {
         return data;
+    };
+    
+    this.length = function() {
+        return data.length;
     };
 }
 

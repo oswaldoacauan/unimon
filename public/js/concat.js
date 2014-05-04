@@ -42,4 +42,8 @@ $(function() {
 	socket.on("message", function(data) {
         $('#log').append(data.message + '<br/>');
     });
+    
+    socket.on("stage", function(data) {
+        Game.goToStage(data.stage);
+    });
 });
