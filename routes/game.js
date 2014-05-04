@@ -1,5 +1,11 @@
 var Players = require('./player.js').Players;
 
+var stages = {
+    STAGE_INPUTNAME: 'stage-inputname',
+    STAGE_LISTROOMS: 'stage-listrooms',
+    STAGE_ROOM: 'stage-room'
+};
+
 function Game() {
     var _players = new Players();
     var _rooms = null;
@@ -12,7 +18,13 @@ function Game() {
         var playerRoom = _rooms.getPlayerRoom(player);
         
         if (playerRoom != null) {
+            var other = playerRoom.other(player);
+            
             _rooms.leave(player, playerRoom.id());
+            
+            if (other != null) {
+                this.sendInfoRoom(other);
+            }
         }
         
         _players.removePlayer(player);
@@ -30,6 +42,19 @@ function Game() {
     
     this.setRooms = function(rooms) {
         _rooms = rooms;
+    }
+    
+    this.sendInfoRoom = function(player) {
+        var room = _rooms.getPlayerRoom(player);
+        
+        player.getSocket().emit('roomInfo', {
+            stage: stages.STAGE_ROOM,
+            room: room.export(),
+            players: {
+                you: room.exportPlayerInfoRoom(player),
+                other: room.exportOtherPlayerInfoRoom(player)
+            }
+        });
     }
 }
 

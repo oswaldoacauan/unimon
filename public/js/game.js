@@ -46,6 +46,23 @@ function Game(socket) {
         $('#' + stageName).show();
     }
     
+    this.roomInfo = function(data) {
+        console.info('teste');
+        $('#room-name').text(data.room.name);
+        
+        var you = data.players.you;
+        var other = data.players.other;
+        
+        $('#player-'+(you.position+1)+'-name').text(you.player.name);
+        
+        if (other != null) {
+            $('#player-'+(other.position+1)+'-name').text(other.player.name);
+        } else {
+            var pos = ((you.position+1) == 1) ? 2 : 1;
+            $('#player-'+pos+'-name').text('( aguardando adversário )');
+        }
+    }
+    
     this.goToStage(_stage);
 }
 

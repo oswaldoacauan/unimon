@@ -43,7 +43,8 @@ $(function() {
         $('#log').append(data.message + '<br/>');
     });
     
-    socket.on("stage", function(data) {
+    socket.on("roomInfo", function(data) {
         Game.goToStage(data.stage);
+        Game.roomInfo(data);
     });
 });

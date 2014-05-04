@@ -16,12 +16,29 @@ function Player(socket) {
     }
 }
 
+Player.prototype.export = function() {
+    return {
+        name: this.getName()
+    };
+}
+
 function Players() {
     var data = [];
     
     this.add = function(player) {
         data.push(player);
     };
+    
+    this.getIndexOf = function(player) {
+        return data.indexOf(player);
+    };
+    
+    this.getByIndex = function(i) {
+        if (typeof data[i] == 'undefined') {
+            return null;
+        }
+        return data[i];
+    }
     
     this.get = function(player) {
         var index = data.indexOf(player);

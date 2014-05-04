@@ -99,11 +99,15 @@ io.sockets.on('connection', function (socket) {
     });
 
     // When someone try to join a room
-    socket.on('join', function(data) {              
+    socket.on('join', function(data) {
         if(rooms.join(player, data.roomId)){
             //set "global variable" for closures
             _room = rooms.reference(data.roomId);
-            socket.emit('stage', {stage: stages.STAGE_ROOM});
+            game.sendInfoRoom(player);
+            var otherPlayer = _room.other(player);
+            if (otherPlayer != null) {
+                game.sendInfoRoom(otherPlayer);
+            }
             socket.emit('message', {message:'Você entrou no campo de batalha (' + _room.getName() + ')'});
         } else {
             socket.emit('message', {message:'Erro ao entrar no campo de batalha'});

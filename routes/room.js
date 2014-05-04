@@ -28,6 +28,21 @@ Room.prototype.export = function() {
     };
 };
 
+Room.prototype.exportPlayerInfoRoom = function(player) {
+    if (player === null) {
+        return null;
+    }
+    
+    return {
+        player: player.export(),
+        position: this.getPlayers().getIndexOf(player)
+    };
+}
+
+Room.prototype.exportOtherPlayerInfoRoom = function(player) {
+    return this.exportPlayerInfoRoom(this.other(player));
+}
+
 //return all the players
 Room.prototype.all=function(){
     return this.getPlayers();
@@ -38,14 +53,10 @@ Room.prototype.hasPlayer = function(player) {
     return (this.getPlayers().get(player) === null) ? false : true;
 };
 
-Room.prototype.other = function(socket) {
-    var players = this.getPlayers();
-    for(var i = 0; i < players.length; i++) {
-        if(players[i].socket != socket) {
-            return players[i];
-        }
-    }
-    return null;
+Room.prototype.other = function(player) {
+    var index = this.getPlayers().getIndexOf(player);
+    var otherIndex = (index == 0) ? 1 : 0;
+    return this.getPlayers().getByIndex(otherIndex);
 };
 
 Room.prototype.add = function(player) {
