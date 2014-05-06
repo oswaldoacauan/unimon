@@ -3,6 +3,7 @@ function Game(socket) {
     var _io     = socket,
         _room   = null,
         _stage  = this.STAGE_INPUTNAME;
+        _PlayerRoud   = 0;
 
     var $roomList = $('#roomList');
 
@@ -47,13 +48,20 @@ function Game(socket) {
     }
 
     this.startGame = function(data) {
+        var you = data.players.you;
+        var other = data.players.other;
 
+        if (_PlayerRoud % 2 == 0) {
+            $('#player-'+(you.position+1)+'-name').parent().find("p").show();
+        } else {
+            $('#player-'+(you.position+1)+'-name').parent().find("p").hide();
+        }
     }
 
-    this.setHp = function() {
-
+    this.Round = function() {
+        alert('Atack');
     }
-    
+
     this.roomInfo = function(data) {
         console.info('teste');
         $('#room-name').text(data.room.name);
@@ -68,8 +76,11 @@ function Game(socket) {
 
             $('#player-'+(you.position+1)+'-name').parent().find("span").text(you.player.hp);
             $('#player-'+(other.position+1)+'-name').parent().find("span").text(other.player.hp);
-            //Game.startGame(data);
 
+            $('#player-'+(you.position+1)+'-name').parent().find("p").hide();
+            $('#player-'+(other.position+1)+'-name').parent().find("p").hide();
+
+            Game.startGame(data);
         } else {
             var pos = ((you.position+1) == 1) ? 2 : 1;
             $('#player-'+pos+'-name').text('( aguardando adversário )');
