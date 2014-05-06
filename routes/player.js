@@ -2,6 +2,7 @@
 function Player(socket) {
     var _socket = socket,
         _name = 'guest';
+        _hp = 200;
     
     this.getSocket = function() {
         return _socket;
@@ -14,11 +15,20 @@ function Player(socket) {
     this.setName = function(name) {
         _name = name;
     }
+
+    this.getHp = function() {
+        return _hp;
+    }
+
+    this.setHp = function(hp) {
+        _hp = hp;
+    }
 }
 
 Player.prototype.export = function() {
     return {
-        name: this.getName()
+        name: this.getName(),
+        hp: this.getHp()
     };
 }
 

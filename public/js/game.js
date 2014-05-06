@@ -45,6 +45,14 @@ function Game(socket) {
         $('.game-stage').hide();
         $('#' + stageName).show();
     }
+
+    this.startGame = function(data) {
+
+    }
+
+    this.setHp = function() {
+
+    }
     
     this.roomInfo = function(data) {
         console.info('teste');
@@ -57,10 +65,16 @@ function Game(socket) {
         
         if (other != null) {
             $('#player-'+(other.position+1)+'-name').text(other.player.name);
+
+            $('#player-'+(you.position+1)+'-name').parent().find("span").text(you.player.hp);
+            $('#player-'+(other.position+1)+'-name').parent().find("span").text(other.player.hp);
+            //Game.startGame(data);
+
         } else {
             var pos = ((you.position+1) == 1) ? 2 : 1;
             $('#player-'+pos+'-name').text('( aguardando adversário )');
         }
+
     }
     
     this.goToStage(_stage);

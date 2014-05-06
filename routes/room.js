@@ -23,6 +23,7 @@ function Room(name, id) {
 Room.prototype.export = function() {
     return {
         name: this.getName(),
+//        hp: this.getHp(),
         ref: this.id(),
         count: this.count()
     };
