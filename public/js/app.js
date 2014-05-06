@@ -31,6 +31,12 @@ $(function() {
             case 'refresh-rooms':
                 Game.listRooms();
                 break;
+
+            case 'attack' :
+                socket.on("Round", function(data) {
+                    Game.Round(data);
+                });
+                break;
                 
             default:
                 break;
@@ -42,6 +48,10 @@ $(function() {
 	socket.on("message", function(data) {
         $('#log').append(data.message + '<br/>');
     });
+
+    socket.on("attack", function(player){
+        Game.roundAttack(player)
+    })
     
     socket.on("roomInfo", function(data) {
         Game.goToStage(data.stage);

@@ -92,9 +92,16 @@ io.sockets.on('connection', function (socket) {
         leave(socket, room);
     });*/
     
-    socket.on('inputPlayerName', function(data) {        
-        io.sockets.emit('message', {message:"Jogador " + player.getName() + " alterou seu nome para " + data.playerName});
+    socket.on('roundPlayerAttack', function(data) {
+        io.sockets.emit('attack', {player: player});
+        io.sockets.emit('message', {message:"Jogador " + data.playerName + " atacou "});
         
+//        player.setName(data.playerName);
+    });
+
+    socket.on('inputPlayerName', function(data) {
+        io.sockets.emit('message', {message:"Jogador " + player.getName() + " alterou seu nome para " + data.playerName});
+
         player.setName(data.playerName);
     });
 

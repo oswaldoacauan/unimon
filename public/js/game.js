@@ -48,6 +48,7 @@ function Game(socket) {
     }
 
     this.startGame = function(data) {
+
         var you = data.players.you;
         var other = data.players.other;
 
@@ -58,8 +59,28 @@ function Game(socket) {
         }
     }
 
-    this.Round = function() {
-        alert('Atack');
+    this.Round = function(data){
+        var you = data.players.you;
+        var other = data.players.other;
+
+        if (_PlayerRoud % 2 == 0) {
+            _io.emit('roundPlayerAttack', {player: you});
+        } else {
+            _io.emit('roundPlayerAttack', {player: other});
+        }
+
+        _PlayerRoud++;
+    }
+
+    this.roundAttack = function(player) {
+        Game.attack(player);
+    }
+
+    this.attack = function(player)  {
+
+        player.setHp(player.getHp() - 10);
+
+        $('#player-'+(player.position+1)+'-name').parent().find("span").text(player.getHp());
     }
 
     this.roomInfo = function(data) {
