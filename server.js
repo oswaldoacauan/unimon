@@ -12,7 +12,7 @@ var express = require('express'),
     rooms   = require('./routes/room.js'),
     game    = require('./routes/game.js'),
     Player  = require('./routes/player.js').Player;
-        
+
 var runningPortNumber = process.env.PORT;
 
 var stages = {
@@ -20,8 +20,6 @@ var stages = {
     STAGE_LISTROOMS: 'stage-listrooms',
     STAGE_ROOM: 'stage-room'
 };
-
-game.setRooms(rooms);
 
 app.configure(function(){
 	// I need to access everything in '/public' directly
@@ -42,6 +40,14 @@ app.configure(function(){
     });
 });
 
+io.set('origins', '*:*');
+
+app.all('*', function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    next();
+});
+
 app.get("/", function(req, res){
 	res.render('index', {});
 });
@@ -55,6 +61,7 @@ app.post('/rooms',function(req, res, next) {
 }, function(req, res) {
     var name = req.body.name || 'dummy';
     rooms.createRoom(name);
+    io.sockets.emit('message', {message:"O campo de batalha " + name + " foi criado"});
     res.json(201, rooms.all());
 });
 
@@ -72,16 +79,18 @@ function leave(socket, room) {
 }
 */
 
+game.setSocket(io);
+game.setRooms(rooms);
 
 io.sockets.on('connection', function (socket) {
     // Globals
 	var _room, _id, _player;
-    
+
     var player = new Player(socket);
     game.addPlayer(player);
-    
+
     io.sockets.emit('message', {message:"Jogador " + player.getName() + " entrou no jogo"});
-    
+
     //leave
     /*socket.on('disconnect', function(data) {
         leave(socket, room);
@@ -91,18 +100,15 @@ io.sockets.on('connection', function (socket) {
         console.log(leave);
         leave(socket, room);
     });*/
-    
+
     socket.on('roundPlayerAttack', function(data) {
-        io.sockets.emit('attack', {player: player});
-        io.sockets.emit('message', {message:"Jogador " + data.playerName + " atacou "});
-        
-//        player.setName(data.playerName);
+        game.attack(_room.getPlayers().getByIndex(_room.getCurrentPlayer()));
     });
 
     socket.on('inputPlayerName', function(data) {
-        io.sockets.emit('message', {message:"Jogador " + player.getName() + " alterou seu nome para " + data.playerName});
-
         player.setName(data.playerName);
+        if(data.playerName == player.getName())
+            io.sockets.emit('message', {message:"Jogador " + player.getName() + " alterou seu nome para " + data.playerName});
     });
 
     // When someone try to join a room
@@ -110,22 +116,22 @@ io.sockets.on('connection', function (socket) {
         if(rooms.join(player, data.roomId)){
             //set "global variable" for closures
             _room = rooms.reference(data.roomId);
-            game.sendInfoRoom(player);
+            game.sendInfoRoom(player, io.sockets);
             var otherPlayer = _room.other(player);
             if (otherPlayer != null) {
-                game.sendInfoRoom(otherPlayer);
+                game.sendInfoRoom(otherPlayer, io.sockets);
             }
             socket.emit('message', {message:'Você entrou no campo de batalha (' + _room.getName() + ')'});
         } else {
             socket.emit('message', {message:'Erro ao entrar no campo de batalha'});
         }
     });
-    
+
     socket.on('disconnect', function () {
         io.sockets.emit('message', {message:"Jogador " + player.getName() + " saiu do jogo"});
         game.removePlayer(player);
     });
-    
+
 });
 
 

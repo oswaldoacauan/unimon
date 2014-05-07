@@ -1,11 +1,13 @@
-
 function Game(socket) {
     var _io     = socket,
         _room   = null,
         _stage  = this.STAGE_INPUTNAME;
-        _PlayerRoud   = 0;
 
     var $roomList = $('#roomList');
+
+    this.init = function() {
+        this.goToStage(_stage);
+    }
 
     this.listRooms = function() {
         $.get('/rooms', function(data) {
@@ -35,70 +37,42 @@ function Game(socket) {
     this.joinRoom = function(id) {
         _io.emit('join', {roomId: id});
     }
-    
+
     this.inputPlayerName = function(name) {
         _io.emit('inputPlayerName', {playerName: name});
         Game.listRooms();
         Game.goToStage(this.STAGE_LISTROOMS);
     }
-    
+
     this.goToStage = function(stageName) {
         $('.game-stage').hide();
         $('#' + stageName).show();
     }
 
     this.startGame = function(data) {
-
         var you = data.players.you;
         var other = data.players.other;
-
-        if (_PlayerRoud % 2 == 0) {
-            $('#player-'+(you.position+1)+'-name').parent().find("p").show();
-        } else {
-            $('#player-'+(you.position+1)+'-name').parent().find("p").hide();
-        }
     }
 
-    this.Round = function(data){
-        var you = data.players.you;
-        var other = data.players.other;
-
-        if (_PlayerRoud % 2 == 0) {
-            _io.emit('roundPlayerAttack', {player: you});
-        } else {
-            _io.emit('roundPlayerAttack', {player: other});
-        }
-
-        _PlayerRoud++;
-    }
-
-    this.roundAttack = function(player) {
-        Game.attack(player);
-    }
-
-    this.attack = function(player)  {
-
-        player.setHp(player.getHp() - 10);
-
-        $('#player-'+(player.position+1)+'-name').parent().find("span").text(player.getHp());
+    this.round = function(){
+        _io.emit('roundPlayerAttack');
     }
 
     this.roomInfo = function(data) {
-        console.info('teste');
         $('#room-name').text(data.room.name);
-        
+
         var you = data.players.you;
         var other = data.players.other;
-        
+
         $('#player-'+(you.position+1)+'-name').text(you.player.name);
-        
+
         if (other != null) {
             $('#player-'+(other.position+1)+'-name').text(other.player.name);
 
             $('#player-'+(you.position+1)+'-name').parent().find("span").text(you.player.hp);
             $('#player-'+(other.position+1)+'-name').parent().find("span").text(other.player.hp);
 
-            $('#player-'+(you.position+1)+'-name').parent().find("p").hide();
+            $('#player-'+(you.position+1)+'-name').parent().find("p").show();
             $('#player-'+(other.position+1)+'-name').parent().find("p").hide();
 
             Game.startGame(data);
@@ -107,9 +81,11 @@ function Game(socket) {
             $('#player-'+pos+'-name').text('( aguardando adversário )');
         }
 
+        $('#stage-room').find("button").attr('disabled', 'disabled');
+        $('#player-'+(data.room.currentPlayer + 1)+'-name').parent().find("button").removeAttr('disabled');
     }
-    
-    this.goToStage(_stage);
+
+    this.init();
 }
 
 Game.prototype.STAGE_INPUTNAME = 'stage-inputname';

@@ -56,30 +56,24 @@
                         </table>
                     </div>
                 </div>
-                
+
                 <div class="row game-stage" id="stage-room">
                     <h2>Sala: <span id="room-name"></span></h2>
-                    
+
                     <div class="col-md-6">
                         <div class="row">
                             <div class="col-md-6">
                                 <h4 id="player-1-name"></h4>
                                 <b>HP:</b> <span>0</span>
                                 <p>
-                                    <button data-action="attack" type="button" class="btn btn-primary">Attack 01</button>
-                                    <button data-action="attack" type="button" class="btn btn-primary">Attack 02</button>
-                                    <button data-action="attack" type="button" class="btn btn-primary">Attack 03</button>
-                                    <button data-action="attack" type="button" class="btn btn-primary">Attack 04</button>
+                                    <button disabled data-action="attack" type="button" class="btn btn-primary btn-block">Attack</button>
                                 </p>
                             </div>
                             <div class="col-md-6">
                                 <h4 id="player-2-name"></h4>
                                 <b>HP:</b> <span>0</span>
                                 <p>
-                                    <button data-action="attack" type="button" class="btn btn-danger">Attack 01</button>
-                                    <button data-action="attack" type="button" class="btn btn-danger">Attack 02</button>
-                                    <button data-action="attack" type="button" class="btn btn-danger">Attack 03</button>
-                                    <button data-action="attack" type="button" class="btn btn-danger">Attack 04</button>
+                                    <button disabled data-action="attack" type="button" class="btn btn-danger btn-block">Attack</button>
                                 </p>
                             </div>
                         </div>
@@ -87,9 +81,9 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">    
+                    <div class="col-md-6">
                         <h4>Combat Log</h4>
-                        <div class="well" id="log"></div>
+                        <pre class="well" id="log"></pre>
                     </div>
                 </div>
 

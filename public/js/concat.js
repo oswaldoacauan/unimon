@@ -1,4 +1,4 @@
-var socket = io.connect('http://127.0.0.1:1337/'),
+var socket = io.connect('http://10.30.10.200:1337/'),
     Game = new Game(socket);
 
 $(function() {
@@ -17,27 +17,25 @@ $(function() {
                 var playerName = _self.siblings('input[name=name]').val();
                 Game.inputPlayerName(playerName);
                 break;
-                
+
             case 'new-room':
                 var inpt = _self.siblings('input[name=room-name]');
                 Game.newRoom(inpt.val());
                 inpt.val(null);
                 break;
-                
+
             case 'join-room':
                 Game.joinRoom(_param);
                 break;
-                
+
             case 'refresh-rooms':
                 Game.listRooms();
                 break;
 
-            case 'attack' :
-                socket.on("Round", function(data) {
-                    Game.Round(data);
-                });
+            case 'attack':
+                Game.round();
                 break;
-                
+
             default:
                 break;
         }
@@ -46,15 +44,15 @@ $(function() {
     // Socket Events
     // =============
 	socket.on("message", function(data) {
-        $('#log').append(data.message + '<br/>');
+        $('#log').prepend(data.message + '<br/>');
     });
 
-    socket.on("attack", function(player){
-        Game.roundAttack(player)
-    })
-    
     socket.on("roomInfo", function(data) {
         Game.goToStage(data.stage);
         Game.roomInfo(data);
+    });
+
+    socket.on("changeStage", function(data) {
+        Game.goToStage(data.stage);
     });
 });

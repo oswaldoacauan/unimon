@@ -4,7 +4,9 @@ function Room(name, id) {
     var _ref = id,
         _players = new Players(),
         _name = name,
+        _currentPlayer = 0,
         onPlay = false;
+
 
     this.id = function() {
         return _ref;
@@ -17,13 +19,21 @@ function Room(name, id) {
     this.getName = function() {
         return _name;
     };
+
+    this.getCurrentPlayer = function() {
+        return _currentPlayer;
+    };
+
+    this.updateCurrentPlayer = function() {
+        _currentPlayer = _currentPlayer == 0 ? 1 : 0;
+    };
 };
 
 //expose the data only
 Room.prototype.export = function() {
     return {
         name: this.getName(),
-//        hp: this.getHp(),
+        currentPlayer: this.getCurrentPlayer(),
         ref: this.id(),
         count: this.count()
     };
@@ -33,7 +43,7 @@ Room.prototype.exportPlayerInfoRoom = function(player) {
     if (player === null) {
         return null;
     }
-    
+
     return {
         player: player.export(),
         position: this.getPlayers().getIndexOf(player)
@@ -177,7 +187,7 @@ function dbSession() {
         }
         return false;
     };
-    
+
     //join
     this.leave = function(player, roomid){
         var room = getRoom(roomid);
@@ -187,14 +197,14 @@ function dbSession() {
             return false;
         }
     };
-    
+
     this.getPlayerRoom = function(player) {
         for(var i = 0; i < data.length; i++) {
             if (data[i].hasPlayer(player)) {
                 return data[i];
             }
         }
-        
+
         return null;
     }
 
